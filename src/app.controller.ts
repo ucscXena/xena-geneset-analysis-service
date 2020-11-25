@@ -39,6 +39,22 @@ export class AppController {
     )
   }
 
+  /**
+   * Here, we are going to assume that al lof the gmt and tpm data will be coming in directly
+   * @param data
+   */
+  @Post('/geneset')
+  analyzeGeneSet(@Body() data: any): any {
+    const method = data.method // for storing
+    const cohort = data.cohort // name of cohort
+    const genesetName = data.geneset // name of geneset
+    const gmtData = data.gmtData // definition of gene sets by gmt data
+    // const tpmData = data.tpmData // tpmData pulled from cohort
+
+    const result = this.appService.analyze(method, cohort, genesetName, gmtData)
+    return this.appService.addGeneSetResult(method, genesetName, result)
+  }
+
   @Post('/geneset')
   addGeneSetResult(@Body() data: any): any {
     const geneset = data.geneset

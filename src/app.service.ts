@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import * as fs from 'fs'
+import {execSync} from "child_process";
 
 let memoryDb = { results: [] }
+
+let DEFAULT_PATH = '/tmp/path.json'
 
 @Injectable()
 export class AppService {
@@ -109,5 +112,31 @@ export class AppService {
   saveGeneSetState(path: string): any {
     fs.writeFileSync(path, JSON.stringify(memoryDb))
     return memoryDb
+  }
+
+
+  analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
+
+    const tpmFile = this.getTpmFile(cohort) // TODO: implement
+    const gmtPath = {} // TODO: write to file
+    const outputFile = {} // TODO: write an output file based on hash of geneset and cohort
+
+    let command = `Rscript bpa-analysis ${gmtPath} ${tpmFile} ${outputFile} ${method}`
+    console.log('command',command)
+    const returnValue = execSync(command)
+    const result = {} // TODO: read outputFile
+    // TODO: delete outputFile
+    this.addGeneSetResult(method,genesetName,result)
+    this.saveGeneSetState(DEFAULT_PATH)
+
+    return returnValue
+  }
+
+  getTpmFile(cohort: any) {
+    // TODO: generate url from formula in client
+    // read from file
+    // download
+    // store to file
+    // return tpmFile path
   }
 }

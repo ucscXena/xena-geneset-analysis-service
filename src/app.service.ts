@@ -122,7 +122,7 @@ export class AppService {
     return `${selectedCohort['gene expression'].host}/download/${selectedCohort['gene expression'].dataset}.gz`
   }
 
-  async generateTpmFromCohort(cohort){
+  async generateTpmFromCohort(cohort):Promise<string>{
     const url = this.generateTpmUrlForCohort(cohort)
     const filename = url.substr(url.lastIndexOf('/')+1)
     if(!fs.existsSync(filename)){
@@ -133,11 +133,12 @@ export class AppService {
     return filename
   }
 
-  analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
+  async analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
 
-    const tpmFile = this.getTpmFile(cohort) // TODO: implement
-    const gmtPath = '' // TODO: write to file
-    const outputFile = '' // TODO: write an output file based on hash of geneset and cohort
+    const tpmFile = await this.generateTpmFromCohort(cohort)
+    const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
+    const outputFile = this.geneAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
+
 
     this.checkAnalysisEnvironment()
     if(method==='BPA'){
@@ -149,15 +150,6 @@ export class AppService {
     this.saveGeneSetState(DEFAULT_PATH)
 
     return result
-  }
-
-  getTpmFile(cohort: any):string {
-    // TODO: generate url from formula in client
-    // read from file
-    // download
-    // store to file
-    // return tpmFile path
-    return ''
   }
 
   checkAnalysisEnvironment() {
@@ -177,5 +169,16 @@ export class AppService {
     const returnValue = execSync(command)
     console.log('return path',returnValue)
     return outputFile
+  }
+
+  generateGmtFile(genesetName: string, gmtData: any) {
+    if(!fs.existsSync(genesetName)){
+      fs.writeFileSync(genesetName,gmtData)
+    }
+    return fs.readFileSync(genesetName)
+  }
+
+  geneAnalysisFile(gmtPath: void, cohort: string) {
+
   }
 }

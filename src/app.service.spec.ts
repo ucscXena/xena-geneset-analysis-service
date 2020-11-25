@@ -36,7 +36,8 @@ describe('AppService', () => {
       expect(output).toEqual('TCGA-OV_tpm_tab.tsv.gz')
     },100000)
 
-    it('Do BPA analysis', () => {
+    it('Generate GMT file', () => {
+      // this.gener
     })
 
   })

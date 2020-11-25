@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common'
 import * as fs from 'fs'
-import {execSync} from "child_process";
+import axios from 'axios'
+import {execSync} from "child_process"
 import * as XENA_SERVER_INFO from './analysis/defaultDatasetForGeneset.json'
 
 let memoryDb = { results: [] }
@@ -121,12 +122,15 @@ export class AppService {
     return `${selectedCohort['gene expression'].host}/download/${selectedCohort['gene expression'].dataset}.gz`
   }
 
-  generateTpmFromCohort(cohort){
+  async generateTpmFromCohort(cohort){
     const url = this.generateTpmUrlForCohort(cohort)
-    // this.http.get(url)
-    // const selectedCohort = getCohortDetails(cohort)
-    // return `${selectedCohort['geneExpression'].host}/download/${selectedCohort['geneExpression'].dataset}.gz`
-    return 'somefile.gz'
+    const filename = url.substr(url.lastIndexOf('/')+1)
+    if(!fs.existsSync(filename)){
+      const outputData = await axios.get(url)
+      fs.writeFileSync(filename, outputData.toString())
+    }
+    // const outputData = fs.readFileSync(filename)
+    return filename
   }
 
   analyze(method: string, cohort: string,genesetName: string, gmtData: any) {

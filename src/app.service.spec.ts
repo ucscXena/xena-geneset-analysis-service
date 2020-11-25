@@ -31,13 +31,10 @@ describe('AppService', () => {
       expect(output).toEqual('https://xenago.xenahubs.net/download/expr_tpm/TCGA-OV_tpm_tab.tsv.gz')
     })
 
-    it('Get TPM data from cohort', () => {
-      const output = appService.generateTpmFromCohort('TCGA Ovarian Cancer (OV)')
-      expect(output).toEqual('http..')
-    })
-
-    it('Get TPM file', () => {
-    })
+    it('Get TPM file from cohort', async () => {
+      const output = await appService.generateTpmFromCohort('TCGA Ovarian Cancer (OV)')
+      expect(output).toEqual('TCGA-OV_tpm_tab.tsv.gz')
+    },100000)
 
     it('Do BPA analysis', () => {
     })

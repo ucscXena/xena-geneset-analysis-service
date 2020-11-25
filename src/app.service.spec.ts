@@ -21,13 +21,18 @@ describe('AppService', () => {
 
 
   describe('Handling analysis', () => {
+    it('Check Environment', () => {
+      const output = appService.checkAnalysisEnvironment()
+      expect(output).toContain('No arguments provided')
+    })
+
     it('Generate URL', () => {
     })
 
     it('Get TPM file', () => {
     })
 
-    it('Do analysis', () => {
+    it('Do BPA analysis', () => {
     })
 
   })

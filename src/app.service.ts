@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import * as fs from 'fs'
-import {execSync} from "child_process";
+import {exec, execSync, spawnSync} from "child_process";
 
 let memoryDb = { results: [] }
 
+let BPA_ANALYSIS_SCRIPT = 'src/analysis/bpa-analysis.R'
 let DEFAULT_PATH = '/tmp/path.json'
 
 @Injectable()
@@ -115,28 +116,55 @@ export class AppService {
   }
 
 
+  generateTpmFromCohort(cohort){
+    // const selectedCohort = getCohortDetails(cohort)
+    // return `${selectedCohort['geneExpression'].host}/download/${selectedCohort['geneExpression'].dataset}.gz`
+    return 'somefile.gz'
+  }
+
   analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
 
     const tpmFile = this.getTpmFile(cohort) // TODO: implement
-    const gmtPath = {} // TODO: write to file
-    const outputFile = {} // TODO: write an output file based on hash of geneset and cohort
+    const gmtPath = '' // TODO: write to file
+    const outputFile = '' // TODO: write an output file based on hash of geneset and cohort
 
-    let command = `Rscript bpa-analysis ${gmtPath} ${tpmFile} ${outputFile} ${method}`
-    console.log('command',command)
-    const returnValue = execSync(command)
+    this.checkAnalysisEnvironment()
+    if(method==='BPA'){
+      this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
+    }
     const result = {} // TODO: read outputFile
     // TODO: delete outputFile
     this.addGeneSetResult(method,genesetName,result)
     this.saveGeneSetState(DEFAULT_PATH)
 
-    return returnValue
+    return result
   }
 
-  getTpmFile(cohort: any) {
+  getTpmFile(cohort: any):string {
     // TODO: generate url from formula in client
     // read from file
     // download
     // store to file
     // return tpmFile path
+    return ''
+  }
+
+  checkAnalysisEnvironment() {
+    let command = `Rscript ${BPA_ANALYSIS_SCRIPT}`
+    try {
+      const child = execSync(command)
+      return child.toString()
+    } catch (e) {
+      console.log('error')
+      console.log(e)
+      return e.message
+    }
+  }
+
+  runBpaAnalysis(gmtPath: string, tpmFile: string, outputFile: string) {
+    let command = `Rscript ${BPA_ANALYSIS_SCRIPT} ${gmtPath} ${tpmFile} ${outputFile} BPA`
+    const returnValue = execSync(command)
+    console.log('return path',returnValue)
+    return outputFile
   }
 }

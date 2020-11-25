@@ -134,4 +134,11 @@ describe('AppController', () => {
       fs.unlinkSync('/tmp/test-dbasdf.json')
     })
   })
+
+  describe('Analysis routes', () => {
+    it('Do analysis', () => {
+      const params = { path: '/tmp/test-dbasdf.json' }
+       appController.analyzeGeneSet(params)
+    })
+  })
 })

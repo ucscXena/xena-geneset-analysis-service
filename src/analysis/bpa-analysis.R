@@ -156,3 +156,7 @@ if( length(args)>2){
   }
   do_bpa_analysis(geneset_gmt_filepath,tmp_expr_data_filepath,outfile )
 }
+if(length(args)<=2){
+  print("No arguments provided")
+}
+

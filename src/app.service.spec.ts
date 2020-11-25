@@ -27,6 +27,13 @@ describe('AppService', () => {
     })
 
     it('Generate URL', () => {
+      const output = appService.generateTpmUrlForCohort('TCGA Ovarian Cancer (OV)')
+      expect(output).toEqual('https://xenago.xenahubs.net/download/expr_tpm/TCGA-OV_tpm_tab.tsv.gz')
+    })
+
+    it('Get TPM data from cohort', () => {
+      const output = appService.generateTpmFromCohort('TCGA Ovarian Cancer (OV)')
+      expect(output).toEqual('http..')
     })
 
     it('Get TPM file', () => {

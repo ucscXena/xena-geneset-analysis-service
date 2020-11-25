@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import {Injectable} from '@nestjs/common'
 import * as fs from 'fs'
-import {exec, execSync, spawnSync} from "child_process";
+import {execSync} from "child_process";
+import * as XENA_SERVER_INFO from './analysis/defaultDatasetForGeneset.json'
 
 let memoryDb = { results: [] }
 
@@ -115,8 +116,14 @@ export class AppService {
     return memoryDb
   }
 
+  generateTpmUrlForCohort(cohort){
+    const selectedCohort = XENA_SERVER_INFO[cohort]
+    return `${selectedCohort['gene expression'].host}/download/${selectedCohort['gene expression'].dataset}.gz`
+  }
 
   generateTpmFromCohort(cohort){
+    const url = this.generateTpmUrlForCohort(cohort)
+    // this.http.get(url)
     // const selectedCohort = getCohortDetails(cohort)
     // return `${selectedCohort['geneExpression'].host}/download/${selectedCohort['geneExpression'].dataset}.gz`
     return 'somefile.gz'

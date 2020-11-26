@@ -37,7 +37,15 @@ describe('AppService', () => {
     },100000)
 
     it('Generate GMT file', () => {
-      // this.gener
+      const fileName = appService.generateGmtFile('abc123.gmt','asdf aklsdfj askldjf sdajf ')
+      expect(fileName).toEqual('abc123.gmt')
+      expect(fs.existsSync(fileName)).toBeTruthy()
+    })
+
+    it('Generate output file name', () => {
+      const fileName = appService.generateEmptyAnalysisFile('data/test-data/test1.gmt','TCGA Ovarian Cancer (OV)')
+      expect(fileName).toEqual('output-TCGA_Ovarian_Cancer_(OV)3def8da3c986fba44c88ad53c387a5b5.tsv')
+      expect(fs.existsSync(fileName)).toBeTruthy()
     })
 
   })

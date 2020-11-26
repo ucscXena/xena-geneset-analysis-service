@@ -3,6 +3,7 @@ import * as fs from 'fs'
 import axios from 'axios'
 import {execSync} from "child_process"
 import * as XENA_SERVER_INFO from './analysis/defaultDatasetForGeneset.json'
+import md5 from 'md5'
 
 let memoryDb = { results: [] }
 
@@ -137,7 +138,7 @@ export class AppService {
 
     const tpmFile = await this.generateTpmFromCohort(cohort)
     const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
-    const outputFile = this.geneAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
+    const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
 
 
     this.checkAnalysisEnvironment()
@@ -171,14 +172,26 @@ export class AppService {
     return outputFile
   }
 
-  generateGmtFile(genesetName: string, gmtData: any) {
+  generateGmtFile(genesetName: string, gmtData: any):string {
     if(!fs.existsSync(genesetName)){
       fs.writeFileSync(genesetName,gmtData)
     }
-    return fs.readFileSync(genesetName)
+    if(!fs.existsSync(genesetName)){
+      return undefined
+    }
+    return genesetName
   }
 
-  geneAnalysisFile(gmtPath: void, cohort: string) {
-
+  generateEmptyAnalysisFile(gmtPath: string, cohort: string):string {
+    const gmtData = fs.readFileSync(gmtPath)
+    const hash = md5(gmtData)
+    const fileName = `output-${cohort.replace(/ /g,'_')}${hash}.tsv`
+    if(!fs.existsSync(fileName)){
+      fs.writeFileSync(fileName,'')
+    }
+    if(!fs.existsSync(fileName)){
+      return undefined
+    }
+    return fileName
   }
 }

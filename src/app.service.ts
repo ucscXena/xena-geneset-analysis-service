@@ -136,17 +136,27 @@ export class AppService {
 
   async analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
 
+    console.log('analyzing with',method,cohort,genesetName,gmtData)
+
     const tpmFile = await this.generateTpmFromCohort(cohort)
     const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
     const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
 
+    console.log('tmpFile',tpmFile)
+    console.log('gmtPath',gmtPath)
+    console.log('outputFile',outputFile)
+
 
     this.checkAnalysisEnvironment()
+    console.log('analysis environmeent fine')
     if(method==='BPA'){
+      console.log('running BPA')
       this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
+      console.log('RAN BPA')
     }
     const result = {} // TODO: read outputFile
     // TODO: delete outputFile
+    console.log('adding gene sets to results')
     this.addGeneSetResult(method,genesetName,result)
     this.saveGeneSetState(DEFAULT_PATH)
 

@@ -40,11 +40,12 @@ export class AppController {
   }
 
   /**
-   * Here, we are going to assume that al lof the gmt and tpm data will be coming in directly
+   * Here, we are going to assume that all of the gmt and tpm data will be coming in directly
    * @param data
    */
-  @Post('/geneset')
+  @Post('/analyze')
   analyzeGeneSet(@Body() data: any): any {
+    console.log('input data',data)
     const method = data.method // for storing
     const cohort = data.cohort // name of cohort
     const genesetName = data.geneset // name of geneset

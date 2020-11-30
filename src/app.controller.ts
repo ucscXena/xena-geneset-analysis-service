@@ -44,10 +44,10 @@ export class AppController {
    * @param data
    */
   @Post('/analyze')
-  analyzeGeneSet(@Body() data: any): any {
+  analyzeGeneSet(@Body() data: any): any{
     // analyzeGeneSet(@Req() req,@Res() res): any {
     // const data = req.body
-    console.log('input data',data)
+    // console.log('input data',data)
     const method = data.method // for storing
     const cohort = data.cohort // name of cohort
     const genesetName = data.gmtname // name of geneset
@@ -58,11 +58,21 @@ export class AppController {
     console.log('method',method)
     console.log('cohort',cohort)
     console.log('genesetName',genesetName)
-    console.log('gmtData',gmtData)
+    // console.log('gmtData',gmtData)
     console.log('tpmUrl',tpmUrl)
 
-    const result = this.appService.analyze(method, cohort, genesetName, gmtData)
-    return this.appService.addGeneSetResult(method, genesetName, result)
+    this.appService.analyze(method, cohort, genesetName, gmtData)
+      .then( result => {
+        console.log('result',result)
+        const addedResult = this.appService.addGeneSetResult(method, genesetName, result)
+        console.log('addedResult',addedResult)
+        return addedResult
+      })
+      .catch(error => {
+        return error
+      })
+    // const {data} = result
+    // console.log('result',data)
   }
 
   @Post('/geneset')

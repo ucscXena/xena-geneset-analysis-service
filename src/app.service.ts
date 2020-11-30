@@ -139,11 +139,11 @@ export class AppService {
     console.log('analyzing with',method,cohort,genesetName,gmtData)
 
     const tpmFile = await this.generateTpmFromCohort(cohort)
+    console.log('tmpFile',tpmFile)
     const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
+    console.log('gmtPath',gmtPath)
     const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
 
-    console.log('tmpFile',tpmFile)
-    console.log('gmtPath',gmtPath)
     console.log('outputFile',outputFile)
 
 
@@ -177,6 +177,7 @@ export class AppService {
 
   runBpaAnalysis(gmtPath: string, tpmFile: string, outputFile: string) {
     let command = `Rscript ${BPA_ANALYSIS_SCRIPT} ${gmtPath} ${tpmFile} ${outputFile} BPA`
+    console.log('command',command)
     const returnValue = execSync(command)
     console.log('return path',returnValue)
     return outputFile
@@ -195,7 +196,7 @@ export class AppService {
   generateEmptyAnalysisFile(gmtPath: string, cohort: string):string {
     const gmtData = fs.readFileSync(gmtPath)
     const hash = md5(gmtData)
-    const fileName = `output-${cohort.replace(/ /g,'_')}${hash}.tsv`
+    const fileName = `output-${cohort.replace(/ |\(|\)/g,'_')}${hash}.tsv`
     if(!fs.existsSync(fileName)){
       fs.writeFileSync(fileName,'')
     }

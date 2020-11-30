@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import {Body, Controller, Delete, Get, Param, Post, Put, Req, Res} from '@nestjs/common'
 import { AppService } from './app.service'
 
 @Controller()
@@ -45,12 +45,21 @@ export class AppController {
    */
   @Post('/analyze')
   analyzeGeneSet(@Body() data: any): any {
+    // analyzeGeneSet(@Req() req,@Res() res): any {
+    // const data = req.body
     console.log('input data',data)
     const method = data.method // for storing
     const cohort = data.cohort // name of cohort
-    const genesetName = data.geneset // name of geneset
-    const gmtData = data.gmtData // definition of gene sets by gmt data
+    const genesetName = data.gmtname // name of geneset
+    const tpmUrl = data.tpmurl // name of geneset
+    const gmtData = data.gmtdata // definition of gene sets by gmt data
     // const tpmData = data.tpmData // tpmData pulled from cohort
+
+    console.log('method',method)
+    console.log('cohort',cohort)
+    console.log('genesetName',genesetName)
+    console.log('gmtData',gmtData)
+    console.log('tpmUrl',tpmUrl)
 
     const result = this.appService.analyze(method, cohort, genesetName, gmtData)
     return this.appService.addGeneSetResult(method, genesetName, result)

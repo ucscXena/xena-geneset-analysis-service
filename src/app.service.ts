@@ -127,10 +127,15 @@ export class AppService {
     const url = this.generateTpmUrlForCohort(cohort)
     const filename = url.substr(url.lastIndexOf('/')+1)
     if(!fs.existsSync(filename)){
-      const outputData = await axios.get(url)
-      fs.writeFileSync(filename, outputData.toString())
+      console.log('not exists . . downloading')
+      const {data} = await axios.get(url,{
+        responseType: 'arraybuffer',
+        headers: {
+          'Content-Type': 'gzip'
+        }
+      })
+      await fs.writeFileSync(filename, data)
     }
-    // const outputData = fs.readFileSync(filename)
     return filename
   }
 
@@ -139,7 +144,7 @@ export class AppService {
     console.log('analyzing with',method,cohort,genesetName,gmtData)
 
     const tpmFile = await this.generateTpmFromCohort(cohort)
-    console.log('tmpFile',tpmFile)
+    console.log('tpmFile',tpmFile)
     const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
     console.log('gmtPath',gmtPath)
     const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort

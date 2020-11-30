@@ -159,7 +159,7 @@ export class AppService {
       this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
       console.log('RAN BPA')
     }
-    const result = {} // TODO: read outputFile
+    const result = await fs.readFileSync(outputFile) // TODO: read outputFile
     // TODO: delete outputFile
     console.log('adding gene sets to results')
     this.addGeneSetResult(method,genesetName,result)

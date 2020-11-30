@@ -55,24 +55,17 @@ export class AppController {
     const gmtData = data.gmtdata // definition of gene sets by gmt data
     // const tpmData = data.tpmData // tpmData pulled from cohort
 
-    console.log('method',method)
-    console.log('cohort',cohort)
-    console.log('genesetName',genesetName)
-    // console.log('gmtData',gmtData)
-    console.log('tpmUrl',tpmUrl)
+    // console.log('method',method)
+    // console.log('cohort',cohort)
+    // console.log('genesetName',genesetName)
+    // // console.log('gmtData',gmtData)
+    // console.log('tpmUrl',tpmUrl)
 
-    this.appService.analyze(method, cohort, genesetName, gmtData)
-      .then( result => {
-        console.log('result',result)
-        const addedResult = this.appService.addGeneSetResult(method, genesetName, result)
-        console.log('addedResult',addedResult)
-        return addedResult
-      })
-      .catch(error => {
-        return error
-      })
-    // const {data} = result
-    // console.log('result',data)
+    try {
+      return this.appService.analyze(method, cohort, genesetName, gmtData)
+    } catch (e) {
+      return e
+    }
   }
 
   @Post('/geneset')

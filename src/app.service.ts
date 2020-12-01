@@ -179,7 +179,7 @@ export class AppService {
       const entries = d.split('\t')
       return {
         geneset: entries[0],
-        data: entries.slice(1)
+        data: entries.slice(1).map( d => parseFloat(d))
       }
     })
     return {

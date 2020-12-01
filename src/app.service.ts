@@ -1,7 +1,14 @@
-import { Injectable } from '@nestjs/common'
+import {Injectable} from '@nestjs/common'
 import * as fs from 'fs'
+import axios from 'axios'
+import {execSync} from "child_process"
+import * as XENA_SERVER_INFO from './analysis/defaultDatasetForGeneset.json'
+import md5 from 'md5'
 
 let memoryDb = { results: [] }
+
+let BPA_ANALYSIS_SCRIPT = 'src/analysis/bpa-analysis.R'
+let DEFAULT_PATH = '/tmp/path.json'
 
 @Injectable()
 export class AppService {
@@ -39,7 +46,6 @@ export class AppService {
   }
 
   addGeneSetResult(method: string, geneset: string, result: any): any {
-    // console.log('adding gene set result', method, geneset, result)
     const existingResult = this.getGeneSetResult(method, geneset)
     if (existingResult.length > 0) {
       return {
@@ -51,8 +57,12 @@ export class AppService {
       geneset: geneset,
       result: result,
     }
+    console.log('results to add',resultToAdd)
+    console.log('results to add stringify',JSON.stringify(resultToAdd))
     // db.get('results').push(resultToAdd).write()
+    console.log('input results',memoryDb)
     memoryDb['results'].push(resultToAdd)
+    console.log('output results',memoryDb)
     return resultToAdd
   }
 
@@ -109,5 +119,121 @@ export class AppService {
   saveGeneSetState(path: string): any {
     fs.writeFileSync(path, JSON.stringify(memoryDb))
     return memoryDb
+  }
+
+  generateTpmUrlForCohort(cohort){
+    const selectedCohort = XENA_SERVER_INFO[cohort]
+    return `${selectedCohort['gene expression'].host}/download/${selectedCohort['gene expression'].dataset}.gz`
+  }
+
+  async generateTpmFromCohort(cohort):Promise<string>{
+    const url = this.generateTpmUrlForCohort(cohort)
+    const filename = url.substr(url.lastIndexOf('/')+1)
+    if(!fs.existsSync(filename)){
+      console.log('not exists . . downloading')
+      const {data} = await axios.get(url,{
+        responseType: 'arraybuffer',
+        headers: {
+          'Content-Type': 'gzip'
+        }
+      })
+      await fs.writeFileSync(filename, data)
+    }
+    return filename
+  }
+
+  async analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
+
+    console.log('analyzing with',method,cohort,genesetName,gmtData)
+    const tpmFile = await this.generateTpmFromCohort(cohort)
+    console.log('tpmFile',tpmFile)
+    const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
+    console.log('gmtPath',gmtPath)
+    const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
+    console.log('outputFile',outputFile)
+
+    this.checkAnalysisEnvironment()
+    console.log(`analysis environmeent fine "${method}"`)
+    if(method==='BPA'){
+      if(fs.existsSync(outputFile) && fs.statSync(outputFile).size == 0 ){
+        fs.unlinkSync(outputFile)
+      }
+      if(!fs.existsSync(outputFile)){
+        console.log('running BPA')
+        this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
+        console.log('RAN BPA')
+      }
+    }
+    else{
+      console.log('methid is not BPA ? ',method)
+    }
+    const result = await fs.readFileSync(outputFile,"utf8")
+
+    const convertedResult = this.convertTsv(result)
+    console.log('adding gene sets to results')
+    console.log('result',result)
+    this.addGeneSetResult(method,genesetName,convertedResult)
+    this.saveGeneSetState(DEFAULT_PATH)
+
+    return convertedResult
+  }
+
+  convertTsv(tsvInput: any) {
+    const lines = tsvInput.split('\n')
+    const rawData = lines.slice(1)
+    const data = rawData.filter(d => d.length>0 ).map( d => {
+      const entries = d.split('\t')
+      return {
+        geneset: entries[0],
+        data: entries.slice(1).map( d => parseFloat(d))
+      }
+    })
+    return {
+      samples : lines[0].slice(1).split('\t'),
+      data,
+    }
+  }
+
+  checkAnalysisEnvironment() {
+    let command = `Rscript ${BPA_ANALYSIS_SCRIPT}`
+    try {
+      const child = execSync(command)
+      return child.toString()
+    } catch (e) {
+      console.log('error')
+      console.log(e)
+      return e.message
+    }
+  }
+
+  runBpaAnalysis(gmtPath: string, tpmFile: string, outputFile: string) {
+    let command = `Rscript ${BPA_ANALYSIS_SCRIPT} ${gmtPath} ${tpmFile} ${outputFile} BPA`
+    console.log('command',command)
+    const returnValue = execSync(command)
+    console.log('return path',returnValue)
+    return outputFile
+  }
+
+  generateGmtFile(genesetName: string, gmtData: any):string {
+    if(!fs.existsSync(genesetName)){
+      fs.writeFileSync(genesetName,gmtData)
+    }
+    if(!fs.existsSync(genesetName)){
+      return undefined
+    }
+    return genesetName
+  }
+
+  generateEmptyAnalysisFile(gmtPath: string, cohort: string):string {
+    const gmtData = fs.readFileSync(gmtPath)
+    const hash = md5(gmtData)
+    const fileName = `output-${cohort.replace(/ |\(|\)/g,'_')}${hash}.tsv`
+    if(!fs.existsSync(fileName)){
+      fs.writeFileSync(fileName,'')
+    }
+    if(!fs.existsSync(fileName)){
+      return undefined
+    }
+    return fileName
   }
 }

@@ -144,28 +144,34 @@ export class AppService {
 
   async analyze(method: string, cohort: string,genesetName: string, gmtData: any) {
 
-    // console.log('analyzing with',method,cohort,genesetName,gmtData)
+    console.log('analyzing with',method,cohort,genesetName,gmtData)
     const tpmFile = await this.generateTpmFromCohort(cohort)
-    // console.log('tpmFile',tpmFile)
+    console.log('tpmFile',tpmFile)
     const gmtPath = this.generateGmtFile(genesetName,gmtData) // TODO: write to file
-    // console.log('gmtPath',gmtPath)
+    console.log('gmtPath',gmtPath)
     const outputFile = this.generateEmptyAnalysisFile(gmtPath,cohort) // TODO: write an output file based on hash of geneset and cohort
-    // console.log('outputFile',outputFile)
+    console.log('outputFile',outputFile)
 
     this.checkAnalysisEnvironment()
-    // console.log('analysis environmeent fine')
+    console.log(`analysis environmeent fine "${method}"`)
     if(method==='BPA'){
-      if(!fs.existsSync(outputFile)){
-        // console.log('running BPA')
-        this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
-        // console.log('RAN BPA')
+      if(fs.existsSync(outputFile) && fs.statSync(outputFile).size == 0 ){
+        fs.unlinkSync(outputFile)
       }
+      if(!fs.existsSync(outputFile)){
+        console.log('running BPA')
+        this.runBpaAnalysis(gmtPath,tpmFile,outputFile)
+        console.log('RAN BPA')
+      }
+    }
+    else{
+      console.log('methid is not BPA ? ',method)
     }
     const result = await fs.readFileSync(outputFile,"utf8")
 
     const convertedResult = this.convertTsv(result)
-    // console.log('adding gene sets to results')
-    // console.log('result',result)
+    console.log('adding gene sets to results')
+    console.log('result',result)
     this.addGeneSetResult(method,genesetName,convertedResult)
     this.saveGeneSetState(DEFAULT_PATH)
 

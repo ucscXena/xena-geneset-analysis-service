@@ -44,9 +44,18 @@ describe('AppService', () => {
 
     it('Generate output file name', () => {
       const fileName = appService.generateEmptyAnalysisFile('data/test-data/test1.gmt','TCGA Ovarian Cancer (OV)')
-      expect(fileName).toEqual('output-TCGA_Ovarian_Cancer_(OV)3def8da3c986fba44c88ad53c387a5b5.tsv')
+      expect(fileName).toEqual('output-TCGA_Ovarian_Cancer__OV_3def8da3c986fba44c88ad53c387a5b5.tsv')
       expect(fs.existsSync(fileName)).toBeTruthy()
+    })
+
+    it('Convert tsv to json',() => {
+      const tsvInput = fs.readFileSync('data/test-data/testInput.tsv','utf-8')
+      const result = appService.convertTsv(tsvInput)
+      expect(result.samples.length).toEqual(379)
+      expect(result.data.length).toEqual(41)
+      expect(result.data[0].data.length).toEqual(379)
     })
 
   })
 })
+

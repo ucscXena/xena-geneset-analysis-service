@@ -162,12 +162,30 @@ export class AppService {
       }
     }
     const result = await fs.readFileSync(outputFile,"utf8")
+
+    const convertedResult = this.convertTsv(result)
     // console.log('adding gene sets to results')
     // console.log('result',result)
-    this.addGeneSetResult(method,genesetName,result)
+    this.addGeneSetResult(method,genesetName,convertedResult)
     this.saveGeneSetState(DEFAULT_PATH)
 
-    return result
+    return convertedResult
+  }
+
+  convertTsv(tsvInput: any) {
+    const lines = tsvInput.split('\n')
+    const rawData = lines.slice(1)
+    const data = rawData.filter(d => d.length>0 ).map( d => {
+      const entries = d.split('\t')
+      return {
+        geneset: entries[0],
+        data: entries.slice(1)
+      }
+    })
+    return {
+      samples : lines[0].slice(1).split('\t'),
+      data,
+    }
   }
 
   checkAnalysisEnvironment() {

@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnalysisResultsModule } from './analysis-results/analysis-results.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
+import { GmtModule } from './gmt/gmt.module';
+import { TpmModule } from './tpm/tpm.module';
 
 @Module({
   imports: [HttpModule, AnalysisResultsModule,
@@ -12,6 +14,8 @@ import {TypeOrmModule} from "@nestjs/typeorm";
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    GmtModule,
+    TpmModule,
   ],
   controllers: [AppController],
   providers: [AppService],

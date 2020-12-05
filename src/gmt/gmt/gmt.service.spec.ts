@@ -23,34 +23,34 @@ describe('GmtService', () => {
   });
 
 
-  it('call method', async () => {
-    console.log('a',service)
-    const foundAll = await service.findAll()
-    console.log('b')
-    console.log(foundAll)
-    // // const foundAll = service.findAll()
-    // try {
-    //   const p = Promise.resolve(foundAll)
-    //   p.then((value) => {
-    //     console.log('value', value)
-    //   })
-    // } catch (e) {
-    //   console.error(e)
-    //   expect(false).toBeTruthy()
-    // }
-
-    const gmt = new Gmt()
-    gmt.hash = '2354235'
-    gmt.name  = 'asdf'
-    gmt.id = 7
-    gmt.data = "data and stuff"
-
-    const addResult = service.create(gmt)
-
-    const deleteResult = service.delete(gmt.id)
-    // console.log(foundAll)
-    // const output = await Promise.resolve(foundAll)
-    // console.log(output)
-    // expect(foundAll).toEqual({})
-  });
+  // it('call method', async () => {
+  //   console.log('a',service)
+  //   const foundAll = await service.findAll()
+  //   console.log('b')
+  //   console.log(foundAll)
+  //   // // const foundAll = service.findAll()
+  //   // try {
+  //   //   const p = Promise.resolve(foundAll)
+  //   //   p.then((value) => {
+  //   //     console.log('value', value)
+  //   //   })
+  //   // } catch (e) {
+  //   //   console.error(e)
+  //   //   expect(false).toBeTruthy()
+  //   // }
+  //
+  //   const gmt = new Gmt()
+  //   gmt.hash = '2354235'
+  //   gmt.name  = 'asdf'
+  //   gmt.id = 7
+  //   gmt.data = "data and stuff"
+  //
+  //   const addResult = service.create(gmt)
+  //
+  //   const deleteResult = service.delete(gmt.id)
+  //   // console.log(foundAll)
+  //   // const output = await Promise.resolve(foundAll)
+  //   // console.log(output)
+  //   // expect(foundAll).toEqual({})
+  // });
 });

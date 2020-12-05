@@ -23,12 +23,6 @@ describe('AppController', () => {
   })
 
 
-  describe('root', () => {
-    it('should return "Hello World stuff!"', () => {
-      expect(appController.getHello()).toBe('Hello World!asdf123')
-    })
-  })
-
   describe('Handling database', () => {
     it('Get all gene sets', () => {
       const TEST_GENE_SET = ['hallmark.gmt', 'bpaAll.gmt', 'paradigmIPL.gmt']

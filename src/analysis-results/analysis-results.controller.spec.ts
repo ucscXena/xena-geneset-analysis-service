@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnalysisResultsController } from './analysis-results.controller';
+import {GmtService} from "../gmt/gmt/gmt.service";
 
 describe('AnalysisResultsController', () => {
   let controller: AnalysisResultsController;

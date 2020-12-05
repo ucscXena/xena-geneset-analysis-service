@@ -4,6 +4,7 @@ import axios from 'axios'
 import {execSync} from "child_process"
 import * as XENA_SERVER_INFO from './analysis/defaultDatasetForGeneset.json'
 import md5 from 'md5'
+import {GmtRepository} from "./gmt/gmt/gmt.repository";
 
 let memoryDb = { results: [] }
 
@@ -12,9 +13,6 @@ let DEFAULT_PATH = '/tmp/path.json'
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!asdf123'
-  }
 
   testDB(): any {
     const defaultDb = [

@@ -13,8 +13,8 @@ export class TpmController {
   }
 
   @Post('create')
-  async create(@Body() analysisResultData: Tpm): Promise<any> {
-    return this.tpmService.create(analysisResultData);
+  async create(@Body() tpmData: Tpm): Promise<any> {
+    return this.tpmService.create(tpmData);
   }
 
   @Put(':id/update')

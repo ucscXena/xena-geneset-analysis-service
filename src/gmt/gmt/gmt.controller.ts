@@ -13,8 +13,8 @@ export class GmtController {
   }
 
   @Post('create')
-  async create(@Body() analysisResultData: Gmt): Promise<any> {
-    return this.gmtService.create(analysisResultData);
+  async create(@Body() gmtData: Gmt): Promise<any> {
+    return this.gmtService.create(gmtData);
   }
 
   @Put(':id/update')

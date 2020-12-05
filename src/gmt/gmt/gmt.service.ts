@@ -8,10 +8,11 @@ export class GmtService {
 
   constructor(
     @InjectRepository(Gmt)
-    private gmtRepository: Repository<Gmt>,
+    public gmtRepository: Repository<Gmt>,
   ) { }
 
   async  findAll(): Promise<Gmt[]> {
+    console.log("setting reopsitory? ",this.gmtRepository)
     return await this.gmtRepository.find();
   }
 
